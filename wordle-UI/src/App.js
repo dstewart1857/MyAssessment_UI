@@ -3,43 +3,38 @@ import Wordle from "./components/Wordle";
 
 function App() {
   const [word, setWord] = useState(null);
+  const [getWord, setGetWord] = useState(true);
 
   useEffect(() => {
+    var acquireWord = async () => {
+        var response = null;
+        try {
+            response = await fetch('https://localhost:7147/Word?test=false');
+        } catch (err) {
+            console.log(err);
+            console.log('Help! I\'m broken - failed to get a response from the desired endpoint.');
+        }
 
-    const wordList = {words: [
-        { id: 0, word: "ninja" },
-        { id: 1, word: "shine" },
-        { id: 2, word: "adult" },
-        { id: 3, word: "block" },
-        { id: 4, word: "chain" },
-        { id: 5, word: "dance" },
-        { id: 6, word: "earth" },
-        { id: 7, word: "faith" },
-        { id: 8, word: "guide" },
-        { id: 9, word: "horse" },
-        { id: 10, word: "image" },
-        { id: 11, word: "judge" },
-        { id: 12, word: "knife" },
-        { id: 13, word: "light" },
-        { id: 14, word: "money" },
-        { id: 15, word: "noise" },
-        { id: 16, word: "order" },
-        { id: 17, word: "phase" },
-        { id: 18, word: "ralph" },
-        { id: 19, word: "shirt" },
-        { id: 20, word: "train" },
-        { id: 21, word: "uncle" },
-        { id: 22, word: "video" },
-        { id: 23, word: "water" },
-        { id: 24, word: "youth" },
-        { id: 25, word: "zebra" },
-        { id: 26, word: "quiet" },
-        { id: 25, word: "xerus" }
-      ]};
-      const randomWord = wordList.words[Math.floor(Math.random() * wordList.words.length)]
-      setWord(randomWord.word)
-      
+        if (response != null) {
+            if (response.status >= 200 && response.status <= 299) {
+                const responseText = await response.text();
+                console.log('Response text: ' + responseText);
+                setWord(responseText);
+            } else {
+                console.log(response.status, response.statusText);
+                console.log('Help! I\'m broken - received invalid response code.');
+            }
+        }
+    };
+
+    if (getWord) {
+        acquireWord();
+        console.log('word is: ' + word);
+        setGetWord(false);
+    };
+
   }, [setWord]);
+
 
   return (
     <div className="App">
